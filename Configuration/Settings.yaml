@@ -1,0 +1,5 @@
+PunktDe:
+  Analytics:
+    MatomoElasticsearchTransfer:
+      customActionDimensions: 5
+      customVisitDimensions: 5

@@ -1,0 +1,2 @@
+PunktDe\Analytics\MatomoElasticsearchTransfer\Processor\MatomoLogProcessorInterface:
+  className: 'PunktDe\Analytics\MatomoElasticsearchTransfer\Processor\MatomoLogProcessor'

@@ -1,0 +1,24 @@
+{
+    "name": "punktde/analytics-matomo-elasticsearch-transfer",
+    "description": "Transfer tracking data from a Matomo instance to an Elasticsearch instance",
+    "type": "neos-package",
+    "license": "MIT",
+    "require": {
+        "neos/flow": "^8.0",
+        "punktde/analytics": "*",
+        "matomo/device-detector": "^4.2",
+        "flowpack/task": "*",
+        "guzzlehttp/guzzle": "*",
+        "punktde/analytics-ifapexport": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PunktDe\\Analytics\\MatomoElasticsearchTransfer\\": "Classes/"
+        }
+    },
+    "extra": {
+        "neos": {
+            "package-key": "PunktDe.Analytics.MatomoElasticsearchTransfer"
+        }
+    }
+}

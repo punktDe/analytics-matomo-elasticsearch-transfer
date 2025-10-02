@@ -1,0 +1,394 @@
+PunktDe:
+  Analytics:
+    elasticsearch:
+
+      server:
+        host: '%env:ELASTICSEARCH_HOST%'
+        port: '%env:ELASTICSEARCH_PORT%'
+        scheme: '%env:ELASTICSEARCH_SCHEME%'
+        user: '%env:ELASTICSEARCH_USERNAME%'
+        pass: '%env:ELASTICSEARCH_PASSWORD%'
+
+      indexConfiguration:
+        matomo_log:
+          index_patterns:
+            - 'matomo_log*'
+          settings:
+            number_of_shards: 1
+            number_of_replicas: 1
+          mappings:
+            properties:
+              date:
+                type: date
+              site_name:
+                type: keyword
+              site_domain:
+                type: keyword
+              site_id:
+                type: keyword
+
+              visit_id:
+                type: long
+              visitor_id:
+                type: keyword
+              visitor_returning:
+                type: keyword
+              visit_referer_type:
+                type: keyword
+              visit_referer_name:
+                type: keyword
+              visit_referer_url:
+                type: keyword
+              visit_total_actions:
+                type: integer
+              visit_total_time:
+                type: integer
+              visit_first_action_time:
+                type: date
+              visit_last_action_time:
+                type: date
+              visit_location_geopoint:
+                type: geo_point
+              visit_location_city:
+                type: keyword
+              visit_location_country:
+                type: keyword
+              visit_location_continent:
+                type: keyword
+              visit_location_country_iso3166:
+                type: keyword
+
+              visit_campaign_id:
+                type: keyword
+              visit_campaign_name:
+                type: keyword
+              visit_campaign_keyword:
+                type: keyword
+              visit_campaign_medium:
+                type: keyword
+              visit_campaign_source:
+                type: keyword
+
+              visit_browser_name:
+                type: keyword
+              visit_browser_version:
+                type: keyword
+              visit_os:
+                type: keyword
+              visit_os_version:
+                type: keyword
+              visit_resolution:
+                type: keyword
+              visit_device_model:
+                type: keyword
+              visit_device_brand:
+                type: keyword
+              visit_device_type:
+                type: keyword
+              visit_entry_url:
+                type: keyword
+              visit_entry_name:
+                type: keyword
+              visit_exit_url:
+                type: keyword
+
+              # visit dimensions are added through \PunktDe\Analytics\MatomoElasticsearchTransfer\Elasticsearch\IndexConfiguration\IndexConfigurationPostProcessor
+
+              action_pageview_position:
+                type: integer
+              action_time_server:
+                type: integer
+              action_time_transfer:
+                type: integer
+              action_time_dom_processing:
+                type: integer
+              action_time_spent:
+                type: integer
+              action_hour_of_day:
+                type: keyword
+              action_day_of_week_name:
+                type: keyword
+              action_day_of_week_position:
+                type: integer
+
+              action_url_type:
+                type: short
+              action_url_keyword:
+                type: keyword
+              action_url_searchable:
+                type: text
+              action_url_host:
+                type: keyword
+              action_url_path_segment_1:
+                type: keyword
+              action_url_path_segment_2:
+                type: keyword
+              action_url_path_segment_3:
+                type: keyword
+              action_url_path_segment_4:
+                type: keyword
+              action_url_path_segment_5:
+                type: keyword
+              action_url_query_parameter:
+                type: keyword
+              action_name_type:
+                type: short
+              action_name_keyword:
+                type: keyword
+              action_name_searchable:
+                type: text
+              action_event_action_keyword:
+                type: keyword
+              action_event_action_searchable:
+                type: text
+              action_event_category_keyword:
+                type: keyword
+              action_event_category_searchable:
+                type: text
+              action_ref_url_keyword:
+                type: keyword
+              action_ref_url_searchable:
+                type: text
+
+              # action dimensions are added through \PunktDe\Analytics\MatomoElasticsearchTransfer\Elasticsearch\IndexConfiguration\IndexConfigurationPostProcessor
+
+              goal_name:
+                type: keyword
+              goal_description:
+                type: keyword
+              goal_revenue:
+                type: integer
+
+              action_language:
+                type: keyword
+
+              segment:
+                type: keyword
+              flow_download:
+                type: keyword
+
+        matomo_visit:
+          index_patterns:
+            - 'matomo_visit*'
+          settings:
+            number_of_shards: 1
+            number_of_replicas: 1
+          mappings:
+            properties:
+              date:
+                type: date
+              site_name:
+                type: keyword
+              site_id:
+                type: keyword
+
+              visit_id:
+                type: long
+              visitor_id:
+                type: keyword
+              visitor_returning:
+                type: keyword
+              visit_referer_type:
+                type: keyword
+              visit_referer_name:
+                type: keyword
+              visit_referer_url:
+                type: keyword
+              visit_total_actions:
+                type: integer
+              visit_total_time:
+                type: integer
+              visit_first_action_time:
+                type: date
+              visit_last_action_time:
+                type: date
+              visit_location_geopoint:
+                type: geo_point
+              visit_location_city:
+                type: keyword
+              visit_location_country:
+                type: keyword
+              visit_location_continent:
+                type: keyword
+              visit_location_country_iso3166:
+                type: keyword
+
+              visit_campaign_id:
+                type: keyword
+              visit_campaign_name:
+                type: keyword
+              visit_campaign_keyword:
+                type: keyword
+              visit_campaign_medium:
+                type: keyword
+              visit_campaign_source:
+                type: keyword
+
+              visit_browser_name:
+                type: keyword
+              visit_browser_version:
+                type: keyword
+              visit_os:
+                type: keyword
+              visit_os_version:
+                type: keyword
+              visit_resolution:
+                type: keyword
+              visit_device_model:
+                type: keyword
+              visit_device_brand:
+                type: keyword
+              visit_device_type:
+                type: keyword
+              visit_entry_url:
+                type: keyword
+
+              goal_name:
+                type: keyword
+              goal_description:
+                type: keyword
+              goal_revenue:
+                type: integer
+
+              segment:
+                type: keyword
+
+        matomo_form:
+          index_patterns:
+            - 'matomo_form*'
+          settings:
+            number_of_shards: 1
+            number_of_replicas: 0
+          mappings:
+            properties:
+              date:
+                type: date
+              site_name:
+                type: keyword
+
+              visit_id:
+                type: long
+              visitor_id:
+                type: keyword
+              visit_referer_type:
+                type: keyword
+              visit_referer_name:
+                type: keyword
+              visit_referer_url:
+                type: keyword
+              visit_total_actions:
+                type: integer
+              visit_total_time:
+                type: integer
+              visit_first_action_time:
+                type: date
+              visit_last_action_time:
+                type: date
+              visit_location_geopoint:
+                type: geo_point
+              visit_location_city:
+                type: keyword
+              visit_location_country:
+                type: keyword
+              visit_location_continent:
+                type: keyword
+              visit_location_country_iso3166:
+                type: keyword
+
+              visit_campaign_id:
+                type: keyword
+              visit_campaign_name:
+                type: keyword
+              visit_campaign_keyword:
+                type: keyword
+              visit_campaign_medium:
+                type: keyword
+              visit_campaign_source:
+                type: keyword
+
+              visit_browser_name:
+                type: keyword
+              visit_browser_version:
+                type: keyword
+              visit_os:
+                type: keyword
+              visit_os_version:
+                type: keyword
+              visit_resolution:
+                type: keyword
+              visit_device_model:
+                type: keyword
+              visit_device_brand:
+                type: keyword
+              visit_device_type:
+                type: keyword
+              visit_entry_url:
+                type: keyword
+              visit_entry_name:
+                type: keyword
+              visit_exit_url:
+                type: keyword
+
+              action_hour_of_day:
+                type: keyword
+              action_day_of_week_name:
+                type: keyword
+              action_day_of_week_position:
+                type: integer
+
+              action_url_keyword:
+                type: keyword
+              action_url_searchable:
+                type: text
+              action_name_keyword:
+                type: keyword
+              action_url_host:
+                type: keyword
+              action_url_path_segment_1:
+                type: keyword
+              action_url_path_segment_2:
+                type: keyword
+              action_url_path_segment_3:
+                type: keyword
+              action_url_path_segment_4:
+                type: keyword
+              action_url_path_segment_5:
+                type: keyword
+              action_url_query_parameter:
+                type: keyword
+
+              form_name:
+                type: keyword
+              form_description:
+                type: keyword
+              form_num_views:
+                type: integer
+              form_num_starts:
+                type: integer
+              form_num_submissions:
+                type: integer
+              form_converted:
+                type: integer
+              form_time_hesitation:
+                type: integer
+              form_time_spent:
+                type: integer
+              form_time_to_first_submission:
+                type: integer
+
+              segment:
+                type: keyword
+
+    persistence:
+      matomo:
+        backendOptions:
+          driver: 'pdo_mysql'
+          charset: 'utf8mb4'
+          dbname: '%env:MATOMO_MYSQL_DATABASE%'
+          user: '%env:MATOMO_MYSQL_USERNAME%'
+          password: '%env:MATOMO_MYSQL_PASSWORD%'
+          host: '%env:MATOMO_MYSQL_HOST%'
+        doctrine:
+          enable: true,
+          sqlLogger: null,
+          secondLevelCache: [ ]
