@@ -55,7 +55,7 @@ class JobRunner
     #[Flow\InjectConfiguration(path: "elasticsearch.server", package: "PunktDe.Analytics")]
     protected array $clientConfiguration;
 
-    protected Client $guzzleClient = null;
+    protected ?Client $guzzleClient = null;
 
     public function run(string $interval = '', string $jobs = '', string $sites = ''): void
     {
