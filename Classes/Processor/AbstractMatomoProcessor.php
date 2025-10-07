@@ -30,8 +30,11 @@ abstract class AbstractMatomoProcessor implements ElasticsearchProcessorInterfac
     #[Flow\Inject]
     protected CldrRepository $cldrRepository;
 
-    #[Flow\inject]
-    protected Service $i18nService;
+    /**
+     * @var Service
+     * @Flow\Inject
+     */
+    protected $i18nService;
 
     #[Flow\Inject]
     protected PackageManager $packageManager;
