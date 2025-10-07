@@ -15,9 +15,16 @@ use PunktDe\Analytics\Transfer\AbstractTransferJob;
 
 class MatomoFormTransferJob extends AbstractTransferJob
 {
+    /**
+     * @var MatomoFormProcessor
+     */
     #[Flow\Inject]
-    protected MatomoFormProcessor $processor;
+    protected $processor;
 
+
+    /**
+     * @var MatomoFormIndex
+     */
     #[Flow\Inject]
-    protected MatomoFormIndex $index;
+    protected $index;
 }

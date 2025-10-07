@@ -15,9 +15,15 @@ use PunktDe\Analytics\Transfer\AbstractTransferJob;
 
 class MatomoVisitTransferJob extends AbstractTransferJob
 {
+    /**
+     * @var MatomoVisitProcessor
+     */
     #[Flow\Inject]
-    protected MatomoVisitProcessor $processor;
+    protected $processor;
 
+    /**
+     * @var MatomoVisitIndex
+     */
     #[Flow\Inject]
-    protected MatomoVisitIndex $index;
+    protected $index;
 }

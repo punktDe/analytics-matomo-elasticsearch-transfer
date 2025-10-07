@@ -15,9 +15,15 @@ use PunktDe\Analytics\Transfer\AbstractTransferJob;
 
 class MatomoLogTransferJob extends AbstractTransferJob
 {
+    /**
+     * @var MatomoLogProcessorInterface
+     */
     #[Flow\Inject]
-    protected MatomoLogProcessorInterface $processor;
+    protected $processor;
 
+    /**
+     * @var MatomoLogIndex
+     */
     #[Flow\Inject]
-    protected MatomoLogIndex $index;
+    protected $index;
 }
