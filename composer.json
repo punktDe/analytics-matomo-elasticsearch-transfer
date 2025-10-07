@@ -4,7 +4,7 @@
     "type": "neos-package",
     "license": "MIT",
     "require": {
-        "neos/flow": "^8.0",
+        "neos/flow": "^8.0 || ^9.0",
         "punktde/analytics": "*",
         "matomo/device-detector": "^4.2",
         "flowpack/task": "*",
