@@ -17,7 +17,7 @@ class IndexConfigurationPostProcessor implements IndexConfigurationPostProcessor
     #[Flow\InjectConfiguration(path: "customActionDimensions", package: "PunktDe.Analytics.MatomoElasticsearchTransfer")]
     protected int $customActionDimensions;
 
-    #[Flow\InjectConfiguration(path: "customVisitDimensions", package: "MatomoElasticsearchTransfer")]
+    #[Flow\InjectConfiguration(path: "customVisitDimensions", package: "PunktDe.Analytics.MatomoElasticsearchTransfer")]
     protected int $customVisitDimensions;
 
 
