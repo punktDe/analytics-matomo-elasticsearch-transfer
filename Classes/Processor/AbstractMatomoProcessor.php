@@ -109,7 +109,7 @@ abstract class AbstractMatomoProcessor implements ElasticsearchProcessorInterfac
 
     protected function loadCountryCodeToContinentMap(): void
     {
-        $dataFilePath = Files::concatenatePaths([$this->packageManager->getPackage('PunktDe.Analytics.Matomo')->getPackagePath(), 'Resources/Private/CountryAndContinentCodes.json']);
+        $dataFilePath = Files::concatenatePaths([$this->packageManager->getPackage('PunktDe.Analytics.MatomoElasticsearchTransfer')->getPackagePath(), 'Resources/Private/CountryAndContinentCodes.json']);
         $json = Files::getFileContents($dataFilePath);
         $countries = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         foreach ($countries as $country) {
