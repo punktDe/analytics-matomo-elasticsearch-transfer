@@ -8,8 +8,7 @@
         "punktde/analytics": "*",
         "matomo/device-detector": "^4.2",
         "flowpack/task": "*",
-        "guzzlehttp/guzzle": "*",
-        "punktde/analytics-ifapexport": "*"
+        "guzzlehttp/guzzle": "*"
     },
     "autoload": {
         "psr-4": {
