@@ -12,16 +12,23 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Utility\Environment;
 use Neos\Utility\Files;
 use PunktDe\Analytics\MatomoElasticsearchTransfer\Persistence\MatomoSegmentRepository;
+use PunktDe\Analytics\MatomoElasticsearchTransfer\Persistence\MatomoCustomDimensionRepository;
 
 class SegmentProcessorCodeGenerator
 {
     #[Flow\Inject]
     protected MatomoSegmentRepository $matomoSegmentRespoitory;
 
+    #[Flow\Inject]
+    protected MatomoCustomDimensionRepository $matomoCustomDimensionRepository;
+
+    #[Flow\Inject]
+    protected Environment $environment;
+
     /**
      * @var string[]
      */
-    protected array $matomoToAnalyticsFieldMapping = [
+    protected array $matomoToAnalyticsFieldMappingDefaults = [
         'entryPageUrl' => 'visit_entry_url',
         'entryPageTitle' => 'visit_entry_name',
         'visitorType' => 'visitor_returning',
@@ -37,26 +44,8 @@ class SegmentProcessorCodeGenerator
         'pageUrl' => 'action_url',
         'operatingSystemName' => 'visit_os',
         'city' => 'visit_location_city',
-        'dimension1' => 'action_dimension_1',
-        'dimension2' => 'action_dimension_2',
-        'dimension3' => 'action_dimension_3',
-        'dimension4' => 'action_dimension_4',
-        'dimension5' => 'action_dimension_5',
         'actionUrl' => 'action_url',
     ];
-
-    #[Flow\Inject]
-    protected Environment $environment;
-
-    #[Flow\InjectConfiguration(path: "customDimensions", package: "PunktDe.Analytics.MatomoElasticsearchTransfer")]
-    protected int $customDimensions;
-
-    public function initializeObject(): void
-    {
-        for ($i = 1; $i <= $this->customDimensions; $i++) {
-            $this->matomoToAnalyticsFieldMapping['dimension' . $i] = 'visit_dimension_' . $i;
-        }
-    }
 
     /**
      * @return string
@@ -67,8 +56,22 @@ class SegmentProcessorCodeGenerator
     {
         $segmentConditionCode = '';
 
+        $customDimensionDefinitions = $this->matomoCustomDimensionRepository->findCustomDimensionDefinitions();
+        $matomoToAnalyticsFieldMappingForSites = [];
+
+        foreach($customDimensionDefinitions as $customDimensionDefinition) {
+            if (!array_key_exists((string)$customDimensionDefinition['idsite'], $matomoToAnalyticsFieldMappingForSites)) {
+                $matomoToAnalyticsFieldMappingForSites[(string)$customDimensionDefinition['idsite']] = $this->matomoToAnalyticsFieldMappingDefaults;
+            }
+            $matomoToAnalyticsFieldMappingForSites[(string)$customDimensionDefinition['idsite']]['dimension' . (string)$customDimensionDefinition['idcustomdimension']] = $customDimensionDefinition['scope'] . '_dimension_' . $customDimensionDefinition['index'];
+        }
+
         foreach ($this->matomoSegmentRespoitory->findSegmentDefinitions() as $segmentDefinition) {
-            $segmentExpression = $this->buildSegmentExpression($segmentDefinition['definition']);
+            if (array_key_exists($segmentDefinition['enable_only_idsite'], $matomoToAnalyticsFieldMappingForSites)) {
+                $segmentExpression = $this->buildSegmentExpression($segmentDefinition['definition'], $matomoToAnalyticsFieldMappingForSites[$segmentDefinition['enable_only_idsite']]);
+            } else {
+                $segmentExpression = $this->buildSegmentExpression($segmentDefinition['definition'], $this->matomoToAnalyticsFieldMappingDefaults);
+            }
 
             if ($segmentExpression === '') {
                 continue;
@@ -113,9 +116,9 @@ function calculateSegment(array $data): array
      * @return string
      * @throws \Exception
      */
-    protected function buildSegmentExpression(string $segmentDefinition): string
+    protected function buildSegmentExpression(string $segmentDefinition, array $matomoToAnalyticsFieldMapping): string
     {
-        $segmentExpression = new SegmentExpression($segmentDefinition, $this->matomoToAnalyticsFieldMapping);
+        $segmentExpression = new SegmentExpression($segmentDefinition, $matomoToAnalyticsFieldMapping);
         $segmentExpression->parseSubExpressions();
         $segmentExpression->parseSubExpressionsIntoSqlExpressions();
         return $segmentExpression->getExpression();

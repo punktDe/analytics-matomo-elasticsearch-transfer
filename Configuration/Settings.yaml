@@ -1,6 +1,5 @@
 PunktDe:
   Analytics:
     MatomoElasticsearchTransfer:
-      customDimensions: 10
       customActionDimensions: 5
       customVisitDimensions: 5
