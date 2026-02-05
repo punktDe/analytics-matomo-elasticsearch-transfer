@@ -8,7 +8,7 @@ namespace PunktDe\Analytics\MatomoElasticsearchTransfer\Transfer;
  *  All rights reserved.
  */
 
-use Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elastic\Elasticsearch\Exception\ClientResponseException;
 use Neos\Flow\Annotations as Flow;
 use Neos\Flow\Log\Utility\LogEnvironment;
 use Psr\Log\LoggerInterface;
@@ -218,7 +218,8 @@ class JobRunner
 
     private function aliasExists(string $indexPattern): bool
     {
-        return $this->elasticSearchService->getClient()->indices()->existsAlias(['name' => $indexPattern]);
+        $response = $this->elasticSearchService->getClient()->indices()->existsAlias(['name' => $indexPattern]);
+        return $response->getStatusCode() === 200;
     }
 
     private function createIndexWithAlias(string $indexPattern): void
@@ -245,8 +246,12 @@ class JobRunner
         try {
             $this->elasticSearchService->getClient()->indices()->delete(['index' => $indexPattern]);
             $this->logger->info(sprintf('Successfully removed indices with pattern %s', $indexPattern), LogEnvironment::fromMethodName(__METHOD__));
-        } catch (Missing404Exception $exception) {
-            $this->logger->info(sprintf('Index with pattern %s could not be removed as it is not found', $indexPattern), LogEnvironment::fromMethodName(__METHOD__));
+        } catch (ClientResponseException $exception) {
+            if ($exception->getResponse()->getStatusCode() === 404) {
+                $this->logger->info(sprintf('Index with pattern %s could not be removed as it is not found', $indexPattern), LogEnvironment::fromMethodName(__METHOD__));
+            } else {
+                throw $exception;
+            }
         }
     }
 }

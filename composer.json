@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "neos/flow": "^8.0 || ^9.0",
-        "punktde/analytics": "*",
+        "punktde/analytics": "dev-task/update-elastic-8-package",
         "matomo/device-detector": "^4.2",
         "flowpack/task": "*",
         "guzzlehttp/guzzle": "*"
