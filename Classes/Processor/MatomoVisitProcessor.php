@@ -25,6 +25,7 @@ class MatomoVisitProcessor extends AbstractMatomoProcessor
         $actionDate = strtotime($record['visit_last_action_time']);
 
         $document = [
+            '@timestamp' => date('c', $actionDate),
             'date' => date('c', $actionDate),
 
             'site_id' => (int)$record['site_id'],
