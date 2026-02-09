@@ -18,6 +18,8 @@ PunktDe:
             number_of_replicas: 1
           mappings:
             properties:
+              '@timestamp':
+                type: date
               date:
                 type: date
               site_name:

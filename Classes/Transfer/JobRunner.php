@@ -105,25 +105,38 @@ class JobRunner
         foreach ($siteIds as $siteId) {
             if ($runLogJob) {
                 try {
-                    if (!$this->aliasExists(sprintf("matomo_log-site_%s-ok", $siteId))) {
-                        $this->logger->info(sprintf('Task deleting all indices for site %s and updating template', $siteId), LogEnvironment::fromMethodName(__METHOD__));
-                        $this->deleteIndizes(sprintf("matomo_log-site_%s-", $siteId));
+                    if (!$this->elasticSearchService->getClient()->indices()->existsIndexTemplate(['name' => sprintf('/_index_template/%s-site_%s-ok', $this->matomoLogIndex->getName(), $siteId)])->asBool()) {
+                        $this->logger->info(sprintf('Task creating Log Index Template for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->setupSiteIndexTemplate($this->matomoLogIndex->getName(), (string)$siteId);
+                    } else {
+                        $this->logger->debug(sprintf('Log Index Template for site id %s exists, skipping template creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
+                    }
+
+                    if (!$this->dataStreamExists(sprintf("matomo_log-site_%s-ok", $siteId))) {
+                        $this->logger->info(sprintf('Task creating Log Index Datastream for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->createIndexWithAlias(sprintf("matomo_log-site_%s-ok", $siteId));
                     } else {
-                        $this->logger->debug(sprintf('Alias for site id %s exists, skipping template update', $siteId), LogEnvironment::fromMethodName(__METHOD__));
+                        $this->logger->debug(sprintf('Datastream for site id %s Log index exists, skipping creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                     }
                 } catch (\Exception $exception) {
                     $this->logger->warning(sprintf('Could not recreate matomo_log indizes for site ID %s , error message: %s', $siteId, $exception->getMessage()));
                 }
-
             }
+
             if ($runFormJob) {
                 try {
-                    if (!$this->aliasExists(sprintf("matomo_form-site_%s-ok", $siteId))) {
-                        $this->deleteIndizes(sprintf("matomo_form-site_%s-", $siteId));
+                    if (!$this->elasticSearchService->getClient()->indices()->existsIndexTemplate(['name' => sprintf('/_index_template/%s-site_%s-ok', $this->matomoFormIndex->getName(), $siteId)])->asBool()) {
+                        $this->logger->info(sprintf('Task creating Form Index Template for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->setupSiteIndexTemplate($this->matomoFormIndex->getName(), (string)$siteId);
+                    } else {
+                        $this->logger->debug(sprintf('Form Index Template for site id %s exists, skipping template creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
+                    }
+
+                    if (!$this->dataStreamExists(sprintf("matomo_form-site_%s-ok", $siteId))) {
+                        $this->logger->info(sprintf('Task creating Form Index Datastream for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->createIndexWithAlias(sprintf("matomo_form-site_%s-ok", $siteId));
+                    } else {
+                        $this->logger->debug(sprintf('Datastream for site id %s Form index exists, skipping creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                     }
                 } catch (\Exception $exception) {
                     $this->logger->warning(sprintf('Could not recreate matomo_form indizes for site ID %s , error message: %s', $siteId, $exception->getMessage()));
@@ -132,10 +145,18 @@ class JobRunner
 
             if ($runVisitJob) {
                 try {
-                    if (!$this->aliasExists(sprintf("matomo_visit-site_%s-ok", $siteId))) {
-                        $this->deleteIndizes(sprintf("matomo_visit-site_%s-", $siteId));
+                    if (!$this->elasticSearchService->getClient()->indices()->existsIndexTemplate(['name' => sprintf('/_index_template/%s-site_%s-ok', $this->matomoVisitIndex->getName(), $siteId)])->asBool()) {
+                        $this->logger->info(sprintf('Task creating Visit Index Template for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->setupSiteIndexTemplate($this->matomoVisitIndex->getName(), (string)$siteId);
+                    } else {
+                        $this->logger->debug(sprintf('Visit Index Template for site id %s exists, skipping template creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
+                    }
+
+                    if (!$this->dataStreamExists(sprintf("matomo_visit-site_%s-ok", $siteId))) {
+                        $this->logger->info(sprintf('Task creating Visit Index Datastream for site id %s', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                         $this->createIndexWithAlias(sprintf("matomo_visit-site_%s-ok", $siteId));
+                    } else {
+                        $this->logger->debug(sprintf('Datastream for site id %s Visit index exists, skipping creation', $siteId), LogEnvironment::fromMethodName(__METHOD__));
                     }
                 } catch (\Exception $exception) {
                     $this->logger->warning(sprintf('Could not recreate matomo_visit indizes for site ID %s , error message: %s', $siteId, $exception->getMessage()));
@@ -222,17 +243,14 @@ class JobRunner
         return $response->getStatusCode() === 200;
     }
 
+    private function dataStreamExists(string $name): bool
+    {
+        return $this->elasticSearchService->getClient()->indices()->exists(['index' => $name])->asBool();
+    }
+
     private function createIndexWithAlias(string $indexPattern): void
     {
-        $this->elasticSearchService->getClient()->indices()->create(['index' => sprintf("%s-000001", $indexPattern)]);
-        $this->elasticSearchService->getClient()->indices()->delete(['index' => $indexPattern, 'ignore_unavailable' => true]);
-        $this->elasticSearchService->getClient()->indices()->putAlias(
-            [
-                'index' => sprintf("%s-000001", $indexPattern),
-                'name' => $indexPattern,
-                'body' => ['is_write_index' => true]
-            ]
-        );
+        $this->elasticSearchService->getClient()->indices()->createDataStream(['name' => $indexPattern]);
     }
 
     /**

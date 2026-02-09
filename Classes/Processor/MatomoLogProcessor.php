@@ -35,6 +35,7 @@ class MatomoLogProcessor extends AbstractMatomoProcessor implements MatomoLogPro
         $actionDate = strtotime($record['action_date']);
 
         $document = [
+            '@timestamp' => date('c', $actionDate),
             'date' => date('c', $actionDate),
             'action_hour_of_day' => date('H', $actionDate),
             'action_day_of_week_name' => date('D', $actionDate),
