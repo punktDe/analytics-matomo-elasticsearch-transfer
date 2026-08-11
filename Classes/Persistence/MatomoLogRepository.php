@@ -21,9 +21,9 @@ class MatomoLogRepository extends AbstractMatomoVisitorLogRepository
 
     public function findSiteIds(): array
     {
-        $query = '
-            SELECT `idsite` FROM matomo_site WHERE matomo_site.`transfer_kibana` = 1;
-        ';
+        $query = $this->replaceTablePrefix('
+            SELECT `idsite` FROM {prefix}site WHERE {prefix}site.`transfer_kibana` = 1;
+        ');
 
         $rsm = new ResultSetMappingBuilder($this->dataSource->getEntityManager());
         $rsm->addScalarResult('idsite', 'idsite');
@@ -96,22 +96,22 @@ goal.`name` as goal_name,
 goal.`description` as goal_description,
 goal.`revenue` as goal_revenue
 
-FROM matomo_log_link_visit_action llva
-INNER JOIN matomo_log_visit lv ON llva.`idvisit` = lv.`idvisit`
-INNER JOIN matomo_site site ON llva.`idsite` = site.`idsite`
-LEFT OUTER JOIN matomo_log_action la_url ON llva.`idaction_url` = la_url.`idaction`
-LEFT OUTER JOIN matomo_log_action la_url_ref ON llva.`idaction_url_ref` = la_url_ref.`idaction`
-LEFT OUTER JOIN matomo_log_action la_name ON llva.`idaction_name` = la_name.`idaction`
+FROM {prefix}log_link_visit_action llva
+INNER JOIN {prefix}log_visit lv ON llva.`idvisit` = lv.`idvisit`
+INNER JOIN {prefix}site site ON llva.`idsite` = site.`idsite`
+LEFT OUTER JOIN {prefix}log_action la_url ON llva.`idaction_url` = la_url.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_url_ref ON llva.`idaction_url_ref` = la_url_ref.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_name ON llva.`idaction_name` = la_name.`idaction`
 
-LEFT OUTER JOIN matomo_log_action la_event_action ON llva.`idaction_event_action` = la_event_action.`idaction`
-LEFT OUTER JOIN matomo_log_action la_event_category ON llva.`idaction_event_category` = la_event_category.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_event_action ON llva.`idaction_event_action` = la_event_action.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_event_category ON llva.`idaction_event_category` = la_event_category.`idaction`
 
-LEFT OUTER JOIN matomo_log_action la_entry_url ON lv.`visit_entry_idaction_url` = la_entry_url.`idaction`
-LEFT OUTER JOIN matomo_log_action la_entry_name ON lv.`visit_entry_idaction_name` = la_entry_name.`idaction`
-LEFT OUTER JOIN matomo_log_action la_exit_url ON lv.`visit_exit_idaction_url` = la_exit_url.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_entry_url ON lv.`visit_entry_idaction_url` = la_entry_url.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_entry_name ON lv.`visit_entry_idaction_name` = la_entry_name.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_exit_url ON lv.`visit_exit_idaction_url` = la_exit_url.`idaction`
 
-LEFT OUTER JOIN matomo_log_conversion lc ON lc.`idvisit` = llva.`idvisit`
-LEFT OUTER JOIN matomo_goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite` = llva.`idsite`
+LEFT OUTER JOIN {prefix}log_conversion lc ON lc.`idvisit` = llva.`idvisit`
+LEFT OUTER JOIN {prefix}goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite` = llva.`idsite`
 ';
 
 
@@ -187,6 +187,7 @@ LEFT OUTER JOIN matomo_goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite
         ];
 
         $query = $this->addCustomDimensionsToQuery($query);
+        $query = $this->replaceTablePrefix($query);
         $fields = $this->addCustomDimensionsToFields($fields);
 
         foreach ($fields as $field) {

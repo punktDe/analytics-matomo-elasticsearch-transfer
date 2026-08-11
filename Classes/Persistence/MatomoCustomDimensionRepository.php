@@ -12,6 +12,8 @@ use PunktDe\Analytics\Persistence\AbstractRepository;
 
 class MatomoCustomDimensionRepository extends AbstractRepository
 {
+    use MatomoTablePrefixTrait;
+
     protected function getDataSourceName(): string
     {
         return 'matomo';
@@ -22,7 +24,7 @@ class MatomoCustomDimensionRepository extends AbstractRepository
         $queryBuilder = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
         return $queryBuilder->select('mcd.idcustomdimension', 'mcd.idsite', 'mcd.name', 'mcd.index', 'mcd.scope', 'mcd.active')
-            ->from('matomo_custom_dimensions', 'mcd')
+            ->from($this->tablePrefix . 'custom_dimensions', 'mcd')
             ->execute()->fetchAllAssociative();
     }
 }

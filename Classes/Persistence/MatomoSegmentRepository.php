@@ -12,6 +12,7 @@ use PunktDe\Analytics\Persistence\AbstractRepository;
 
 class MatomoSegmentRepository extends AbstractRepository
 {
+    use MatomoTablePrefixTrait;
 
     protected function getDataSourceName(): string
     {
@@ -23,7 +24,7 @@ class MatomoSegmentRepository extends AbstractRepository
         $queryBuilder = $this->getEntityManager()->getConnection()->createQueryBuilder();
 
         return $queryBuilder->select('name', 'definition', 'enable_only_idsite')
-            ->from('matomo_segment')
+            ->from($this->tablePrefix . 'segment')
             ->where('deleted = 0')
             ->execute()->fetchAllAssociative();
     }

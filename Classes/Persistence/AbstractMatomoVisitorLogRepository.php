@@ -13,6 +13,8 @@ use PunktDe\Analytics\Persistence\AbstractRepository;
 
 abstract class AbstractMatomoVisitorLogRepository extends AbstractRepository
 {
+    use MatomoTablePrefixTrait;
+
     #[Flow\InjectConfiguration(path: "customActionDimensions", package: "PunktDe.Analytics.MatomoElasticsearchTransfer")]
     protected int $customActionDimensions;
 

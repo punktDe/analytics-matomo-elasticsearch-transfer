@@ -63,11 +63,11 @@ goal.`name` as goal_name,
 goal.`description` as goal_description,
 goal.`revenue` as goal_revenue
 
-FROM matomo_log_visit lv
-INNER JOIN matomo_site site ON lv.`idsite` = site.`idsite`
+FROM {prefix}log_visit lv
+INNER JOIN {prefix}site site ON lv.`idsite` = site.`idsite`
 
-LEFT OUTER JOIN matomo_log_conversion lc ON lc.`idvisit` = lv.`idvisit`
-LEFT OUTER JOIN matomo_goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite` = lv.`idsite`
+LEFT OUTER JOIN {prefix}log_conversion lc ON lc.`idvisit` = lv.`idvisit`
+LEFT OUTER JOIN {prefix}goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite` = lv.`idsite`
 ';
 
 
@@ -129,6 +129,7 @@ LEFT OUTER JOIN matomo_goal goal ON goal.`idgoal` = lc.`idgoal` AND goal.`idsite
         ];
 
         $query = $this->addCustomVisitDimensionsToQuery($query);
+        $query = $this->replaceTablePrefix($query);
         $fields = $this->addCustomVisitDimensionsToFields($fields);
 
         foreach ($fields as $field) {

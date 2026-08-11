@@ -76,16 +76,16 @@ la_entry_name.`name` as visit_entry_name,
 
 la_url.`name` as action_url
 
-FROM matomo_log_form log_form
-INNER JOIN matomo_site_form site_form ON log_form.`idsiteform` = site_form.`idsiteform`
-INNER JOIN matomo_site site ON log_form.`idsite` = site.`idsite`
-INNER JOIN matomo_log_visit lv ON log_form.`idvisit` = lv.`idvisit`
-INNER JOIN matomo_log_form_page form_page ON form_page.idlogform = log_form.`idlogform`
+FROM {prefix}log_form log_form
+INNER JOIN {prefix}site_form site_form ON log_form.`idsiteform` = site_form.`idsiteform`
+INNER JOIN {prefix}site site ON log_form.`idsite` = site.`idsite`
+INNER JOIN {prefix}log_visit lv ON log_form.`idvisit` = lv.`idvisit`
+INNER JOIN {prefix}log_form_page form_page ON form_page.idlogform = log_form.`idlogform`
 
-INNER JOIN matomo_log_action la_url ON form_page.`idaction_url` = la_url.`idaction`
+INNER JOIN {prefix}log_action la_url ON form_page.`idaction_url` = la_url.`idaction`
 
-LEFT OUTER JOIN matomo_log_action la_entry_url ON lv.`visit_entry_idaction_url` = la_entry_url.`idaction`
-LEFT OUTER JOIN matomo_log_action la_entry_name ON lv.`visit_entry_idaction_name` = la_entry_name.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_entry_url ON lv.`visit_entry_idaction_url` = la_entry_url.`idaction`
+LEFT OUTER JOIN {prefix}log_action la_entry_name ON lv.`visit_entry_idaction_name` = la_entry_name.`idaction`
 ';
 
         if ($startDate instanceof \DateTime) {
@@ -150,6 +150,7 @@ LEFT OUTER JOIN matomo_log_action la_entry_name ON lv.`visit_entry_idaction_name
         ];
 
         $query = $this->addCustomDimensionsToQuery($query);
+        $query = $this->replaceTablePrefix($query);
         $fields = $this->addCustomDimensionsToFields($fields);
 
         foreach ($fields as $field) {
@@ -165,7 +166,7 @@ LEFT OUTER JOIN matomo_log_action la_entry_name ON lv.`visit_entry_idaction_name
         $customDimensionQueryPart = '';
 
         for ($i = 1; $i <= $this->customActionDimensions; $i++) {
-            $customDimensionQueryPart .= sprintf('(SELECT llva.`custom_dimension_%s` FROM matomo_log_link_visit_action llva WHERE llva.`idvisit` = lv.`idvisit` AND llva.`idaction_url` = form_page.`idaction_url` LIMIT 1) AS action_dimension_%s,', $i, $i) . PHP_EOL;
+            $customDimensionQueryPart .= sprintf('(SELECT llva.`custom_dimension_%s` FROM {prefix}log_link_visit_action llva WHERE llva.`idvisit` = lv.`idvisit` AND llva.`idaction_url` = form_page.`idaction_url` LIMIT 1) AS action_dimension_%s,', $i, $i) . PHP_EOL;
         }
 
         for ($i = 1; $i <= $this->customVisitDimensions; $i++) {

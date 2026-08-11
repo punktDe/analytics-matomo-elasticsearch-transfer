@@ -3,3 +3,4 @@ PunktDe:
     MatomoElasticsearchTransfer:
       customActionDimensions: 5
       customVisitDimensions: 5
+      tablePrefix: 'matomo_'
